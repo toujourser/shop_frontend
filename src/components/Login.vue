@@ -55,9 +55,7 @@
 
         },
         methods: {
-            //
             resetLoginForm() {
-                // console.log(this);
                 this.$refs.loginFormRef.resetFields();
             },
             login() {
@@ -66,7 +64,6 @@
                         return;
                     } else {
                         const {data: res} = await this.$http.post("/user/login", this.loginForm)
-                        console.log(res);
 
                         if (res.meta.status !== 200) {
                             return this.$message.error("登陆失败")

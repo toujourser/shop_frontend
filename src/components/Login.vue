@@ -38,7 +38,7 @@
             return {
                 // 登陆表单的登陆对象
                 loginForm: {
-                    username: 'tom',
+                    username: 'admin',
                     password: 'goodluck'
                 },
                 loginFormRules: {
@@ -63,7 +63,7 @@
                     if (!valid) {
                         return;
                     } else {
-                        const {data: res} = await this.$http.post("/user/login", this.loginForm)
+                        const {data: res} = await this.$http.post("/user/login", this.loginForm);
 
                         if (res.meta.status !== 200) {
                             return this.$message.error("登陆失败")

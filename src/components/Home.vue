@@ -16,7 +16,10 @@
             <!--左侧导航栏-->
             <el-aside :width="isCollapse ? '64px': '200px'">
                 <div class="toggle-button" @click="toggleCollapse">lll</div>
-                <el-menu background-color="#333744" text-color="#fff" active-text-color="#409eff" :unique-opened="true" :collapse="isCollapse" :collapse-transition="false">
+                <el-menu background-color="#333744" text-color="#fff" active-text-color="#409eff" :unique-opened="true"
+                         :collapse="isCollapse" :collapse-transition="false" :router="true"
+                         :default-active="$route.path">
+                    <!-- :default-active="$route.path 将当前活动的路径设置为高亮 -->
                     <!--一级菜单-->
                     <el-submenu :index="item.id+''" v-for="item in menuList" :key="item.id">
 
@@ -29,7 +32,8 @@
                         </template>
 
                         <!--二级菜单-->
-                        <el-menu-item :index="subItem.id+''" v-for="subItem in item.chidren" :key="subItem.id">
+                        <el-menu-item :index="'/'+subItem.path.String" v-for="subItem in item.chidren"
+                                      :key="subItem.id" @click="saveNavtate('/'+subItem.path.String)">
                             <!--图标-->
                             <i class="el-icon-menu"></i>
                             <!--文本-->
@@ -41,7 +45,9 @@
             </el-aside>
 
             <!--右侧内容区域-->
-            <el-main>Main</el-main>
+            <el-main>
+                <router-view></router-view>
+            </el-main>
 
         </el-container>
 
@@ -52,7 +58,8 @@
 <script>
     export default {
         created() {
-            this.getMenuList()
+            this.getMenuList();
+            // this.activePath = window.sessionStorage.getItem("activePath");
         },
         name: "Home",
         data() {
@@ -66,7 +73,9 @@
                     '145': "iconfont icon-baobiao",
                 },
                 // 菜单是否折叠
-                isCollapse: false
+                isCollapse: false,
+                // 被激活的链接
+                activePath: '',
             }
         },
         methods: {
@@ -76,7 +85,7 @@
             },
             async getMenuList() {
                 const {data: res} = await this.$http.get("/menus");
-                console.log(res)
+                console.log(res);
 
                 if (res.meta.status !== 200) {
                     return this.$message.error(res.meta.msg)
@@ -84,8 +93,12 @@
                 this.menuList = res.data
             },
             // 点击按钮实现菜单的折叠和展开
-            toggleCollapse(){
+            toggleCollapse() {
                 this.isCollapse = !this.isCollapse
+            },
+            saveNavtate(activePath) {
+                // window.sessionStorage.setItem("activePath", activePath);
+                // this.activePath = activePath
             }
         }
     }
@@ -118,7 +131,8 @@
 
     .el-aside {
         background-color: #333744;
-        .el-menu{
+
+        .el-menu {
             border-right: 0;
         }
     }
@@ -132,11 +146,11 @@
         height: 100%;
     }
 
-    .iconfont{
+    .iconfont {
         margin-right: 10px;
     }
 
-    .toggle-button{
+    .toggle-button {
         background-color: #4a5064;
         font-size: 10px;
         line-height: 24px;

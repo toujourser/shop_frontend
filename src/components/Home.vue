@@ -32,7 +32,7 @@
                         </template>
 
                         <!--二级菜单-->
-                        <el-menu-item :index="'/'+subItem.path.String" v-for="subItem in item.chidren"
+                        <el-menu-item :index="'/'+subItem.path.String" v-for="subItem in item.children"
                                       :key="subItem.id" @click="saveNavtate('/'+subItem.path.String)">
                             <!--图标-->
                             <i class="el-icon-menu"></i>

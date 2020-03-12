@@ -44,7 +44,8 @@
                                    @click="removeUserById(scope.row.id)"></el-button>
                         <!--分配角色按钮-->
                         <el-tooltip class="item" effect="dark" content="分配角色" placement="top" :enterable="false">
-                            <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
+                            <el-button type="warning" icon="el-icon-setting" size="mini"
+                                       @click="setRole(scope.row)"></el-button>
                         </el-tooltip>
 
                     </template>
@@ -110,6 +111,31 @@
             </span>
         </el-dialog>
 
+        <!--为用户分配角色的对话框-->
+        <el-dialog title="分配角色" :visible.sync="setRoleDialogVisible" width="50%" @close="setRoleDialogClose">
+            <!--内容主体区-->
+            <div>
+                <p>当前的用户：{{userInfo.username}}</p>
+                <p>当前的角色：{{userInfo.role_name}}</p>
+                <p>分配新角色：
+                    <el-select v-model="selectRoleId" placeholder="请选择">
+                        <el-option
+                                v-for="item in roleList"
+                                :key="item.id"
+                                :label="item.roleName"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </p>
+            </div>
+
+            <!--底部区域-->
+            <span slot="footer" class="dialog-footer">
+                    <el-button @click="setRoleDialogVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="saveRoleInfo">确 定</el-button>
+            </span>
+        </el-dialog>
+
 
     </div>
 </template>
@@ -151,6 +177,7 @@
                 addDialogVisible: false,
                 // 控制修改用户对话框的展示和隐藏
                 editDialogVisible: false,
+                setRoleDialogVisible: false,
                 addForm: {
                     username: '',
                     password: '',
@@ -177,6 +204,11 @@
                     ]
                 },
                 editForm: {},
+                // 需要被分配权限的用户角色
+                userInfo: {},
+                roleList: [],
+                // 以选中的角色ID值
+                selectRoleId: '',
             }
         },
 
@@ -209,7 +241,6 @@
             },
             // 监听switch开关的变化
             async userStateChange(userinfo) {
-                console.log(userinfo);
                 // const {data: res} = await this.$http.put(`/user/${userinfo.id}/state/${userinfo.mg_status}`);
                 const {data: res} = await this.$http.put("/user/" + userinfo.id + "/state/" + userinfo.mg_status);
                 if (res.meta.status !== 200) {
@@ -278,9 +309,36 @@
                     if (res.meta.status !== 200) {
                         return this.$message.error("用户删除失败！！！")
                     }
-                    this.$message.success("用户删除成功！！！")
+                    this.$message.success("用户删除成功！！！");
                     this.getUserList()
                 }
+            },
+            // 展示分配角色对话框
+            async setRole(userInfo) {
+                this.userInfo = userInfo;
+                // 在展示对话框之前获取所有的角色列表
+                const {data: res} = await this.$http.get("/roles");
+                if (res.meta.status !== 200) {
+                    return this.$message.error("角色列表查询失败！！！")
+                }
+                this.roleList = res.data;
+                this.setRoleDialogVisible = true;
+            },
+            async saveRoleInfo() {
+                if (!this.selectRoleId) {
+                    return this.$message.error("请选择要分配的角色！！！")
+                }
+                const {data: res} = await this.$http.put(`/user/${this.userInfo.id}/role`, {'rid': this.selectRoleId});
+                if (res.meta.status !== 200) {
+                    return this.$message.error("用户分配角色失败！！！")
+                }
+                this.$message.success("用户分配角色成功！！！");
+                this.setRoleDialogVisible = false;
+                this.getUserList();
+            },
+            setRoleDialogClose() {
+                this.selectRoleId = '';
+                this.userInfo = {};
             }
         },
     }

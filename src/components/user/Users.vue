@@ -230,6 +230,7 @@
             handleSizeChange(newSize) {
                 // console.log(newSize);
                 this.queryInfo.pagesize = newSize;
+                this.queryInfo.pagenum = 1;
                 this.getUserList();
             },
             // 监听页码值变化的事件

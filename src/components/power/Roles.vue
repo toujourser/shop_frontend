@@ -180,7 +180,7 @@
         methods: {
             async showEditDialog(id) {
                 this.editDialogVisible = true;
-                const {data: res} = await this.$http.get(`/roles/${id}`);
+                const {data: res} = await this.$http.get(`/role/${id}`);
                 if (res.meta.status !== 200) {
                     this.$message.error('查询角色信息失败！！')
                 }
@@ -193,7 +193,7 @@
                     type: 'warning'
                 }).catch(err => err);
                 if (confirmResult === "confirm") {
-                    const {data: res} = await this.$http.delete(`/roles/${id}`);
+                    const {data: res} = await this.$http.delete(`/role/${id}`);
                     if (res.meta.status !== 200) {
                         return this.$message.error("角色删除失败！！！")
                     }

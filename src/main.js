@@ -14,14 +14,21 @@ import 'quill/dist/quill.core.css' // import styles
 import 'quill/dist/quill.snow.css' // for snow theme
 import 'quill/dist/quill.bubble.css' // for bubble theme
 
+// 导入nprogress包
+import Nprogress from 'nprogress';
+import 'nprogress/nprogress.css'
+
+
 axios.defaults.baseURL = '/api/v1.0';
 
-// 请求拦截器
+// 请求拦截器 在request拦截器中展示进度条
 axios.interceptors.request.use((config) => {
+    Nprogress.start();
     config.headers.authorization = 'Bearer ' + window.sessionStorage.getItem('token');
     return config
 });
-// 响应信息拦截
+
+// 响应信息拦截 在response中关闭进度条
 axios.interceptors.response.use((response) => {
     if (response.data.code === 401) {
         MessageBox.alert('登录信息超时，请重新登录！', '登录超时', {
@@ -31,6 +38,7 @@ axios.interceptors.response.use((response) => {
         });
 
     }
+    Nprogress.done();
     return response
 });
 Vue.prototype.$http = axios; //将axios挂载到http上， 可以通过this.http 直接访问
